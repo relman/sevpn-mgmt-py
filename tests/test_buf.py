@@ -55,9 +55,16 @@ class TestBuf(unittest.TestCase):
         buf.write_data(value)
         self.assertEqual(buf.storage, expected)
 
+    def test_write_name(self):
+        value = 'new string'
+        expected = '\x00\x00\x00\x0bnew string' if Buf.is_little() else '\x0b\x00\x00\x00new string'
+        buf = Buf()
+        buf.write_name(value)
+        self.assertEqual(buf.storage, expected)
+
     def test_write_str(self):
         value = 'new string'
-        expected = '\x00\x00\x00\x0bnew string\x00' if Buf.is_little() else '\x0b\x00\x00\x00new string\x00'
+        expected = '\x00\x00\x00\nnew string' if Buf.is_little() else '\n\x00\x00\x00new string'
         buf = Buf()
         buf.write_str(value)
         self.assertEqual(buf.storage, expected)
@@ -65,11 +72,11 @@ class TestBuf(unittest.TestCase):
     def test_write_str_unicode(self):
         value = u'Testing «ταБЬℓσ»: 1<2 & 4+1>3'
         expected = (
-            '\x00\x00\x00\'Testing '
-            '\xc2\xab\xcf\x84\xce\xb1\xd0\x91\xd0\xac\xe2\x84\x93\xcf\x83\xc2\xbb: 1<2 & 4+1>3\x00'
+            '\x00\x00\x00&Testing '
+            '\xc2\xab\xcf\x84\xce\xb1\xd0\x91\xd0\xac\xe2\x84\x93\xcf\x83\xc2\xbb: 1<2 & 4+1>3'
         ) if Buf.is_little() else (
-            '\'\x00\x00\x00Testing '
-            '\xc2\xab\xcf\x84\xce\xb1\xd0\x91\xd0\xac\xe2\x84\x93\xcf\x83\xc2\xbb: 1<2 & 4+1>3\x00'
+            '&\x00\x00\x00Testing '
+            '\xc2\xab\xcf\x84\xce\xb1\xd0\x91\xd0\xac\xe2\x84\x93\xcf\x83\xc2\xbb: 1<2 & 4+1>3'
         )
         buf = Buf()
         buf.write_str_unicode(value)
@@ -112,6 +119,17 @@ class TestBuf(unittest.TestCase):
         buf = Buf()
         buf.storage = value
         result = buf.read_data()
+        self.assertEqual(result, expected)
+        self.assertEqual(buf.offset, expected_offset)
+
+    def test_read_name(self):
+        value = bytearray('\x00\x00\x00\x0bnew string\x00321654\x00test data 123456789') if Buf.is_little() \
+            else bytearray('\x0b\x00\x00\x00new string\x00321654\x00test data 123456789')
+        expected = 'new string'
+        expected_offset = 14
+        buf = Buf()
+        buf.storage = value
+        result = buf.read_name()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
 

@@ -50,13 +50,19 @@ class Buf:
         for b in value:
             self.storage.append(b)
 
-    def write_str(self, value):
+    def write_name(self, value):
         if value is None:
             return
         self.write_int(len(value) + 1)
         for ch in value:
             self.storage.append(ch)
-        self.storage.append(0)  # null terminator
+
+    def write_str(self, value):
+        if value is None:
+            return
+        self.write_int(len(value))
+        for ch in value:
+            self.storage.append(ch)
 
     def write_str_unicode(self, value):
         if value is None:
@@ -104,13 +110,13 @@ class Buf:
     def read_name(self):
         len_ = self.read_int()
         seq = self.read_bytes(len_ - 1)
-        str_ = str(seq).rstrip('\0')
+        str_ = str(seq)
         return str_
 
     def read_str(self):
         len_ = self.read_int()
         seq = self.read_bytes(len_)
-        str_ = str(seq)  # .rstrip('\0')
+        str_ = str(seq)
         return str_
 
     def read_str_unicode(self):
