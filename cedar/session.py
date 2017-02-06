@@ -85,5 +85,5 @@ class Session:
                 self.HTTP_CONTENT_TYPE2
             )
         body = pack.to_buf()
-        data = bytearray(header_text) + body
+        data = bytearray(header_text) + body.storage
         sock.sendall(data)
