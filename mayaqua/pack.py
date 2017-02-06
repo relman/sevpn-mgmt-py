@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import collections
 import platform
+import random
 
 from mayaqua import Buf
 
 
 class Pack:
+    HTTP_PACK_RAND_SIZE_MAX = 1000
+
     def __init__(self):
         self._pack = collections.OrderedDict()
 
@@ -71,3 +74,8 @@ class Pack:
         for i in self._pack.items():
             self.write_element(buf, i)
         return buf
+
+    def create_dummy_value(self):
+        size = random.randint(0, self.HTTP_PACK_RAND_SIZE_MAX)
+        rnd = random._urandom(size)
+        self.add_value("pencore", rnd)
