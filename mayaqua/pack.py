@@ -8,6 +8,7 @@ from mayaqua import Buf
 
 class Pack:
     HTTP_PACK_RAND_SIZE_MAX = 1000
+    ALLOWED_TYPES = [bool, int, str, bytearray, unicode, long]
 
     def __init__(self):
         self._pack = collections.OrderedDict()
@@ -63,10 +64,13 @@ class Pack:
         self.add_value('V_Title', platform.platform())
 
     def add_value(self, name, value):
-        if type(value) is bool:  # bool
+        t = type(value)
+        if t is bool:
             self._pack[name] = 1 if value else 0
-        else:  # int, str, bytearray
+        elif t in self.ALLOWED_TYPES:
             self._pack[name] = value
+        else:
+            raise Exception('Not supported value type')
 
     def to_buf(self):
         buf = Buf()
@@ -78,4 +82,4 @@ class Pack:
     def create_dummy_value(self):
         size = random.randint(0, self.HTTP_PACK_RAND_SIZE_MAX)
         rnd = random._urandom(size)
-        self.add_value("pencore", rnd)
+        self.add_value('pencore', rnd)
