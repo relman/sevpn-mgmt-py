@@ -3,11 +3,11 @@ import socket
 import ssl
 
 from cedar import Watermark
-from mayaqua import Pack
+from mayaqua import Buf, Pack
 
 
 class Session:
-    CONNECTING_TIMEOUT = 15
+    CONNECTING_TIMEOUT = 15.0
     HTTP_VPN_TARGET = "/vpnsvc/vpn.cgi"
     HTTP_VPN_TARGET2 = "/vpnsvc/connect.cgi"
     HTTP_CONTENT_TYPE2 = "application/octet-stream"
@@ -63,15 +63,23 @@ class Session:
         spl = data.split('\r\n\r\n')
         if len(spl) != 2:
             raise Exception('Bad HttpResponse')
-        with open('temp', 'w') as f:
-            f.write(data)
         pack = Pack.read_pack(bytearray(spl[1]))
         return pack
+
+    def http_date(self):
+        from wsgiref.handlers import format_date_time
+        from datetime import datetime
+        from time import mktime
+
+        now = datetime.now()
+        stamp = mktime(now.timetuple())
+        return format_date_time(stamp)
 
     def http_client_send(self, pack, sock):
         if not pack:
             return
         pack.create_dummy_value()
+        body = pack.to_buf()
         header_text = \
             "POST {0} HTTP/1.1\r\n" \
             "Date: {1}\r\n" \
@@ -79,14 +87,31 @@ class Session:
             "Keep-Alive: {3}\r\n" \
             "Connection: {4}\r\n" \
             "Content-Type: {5}\r\n" \
+            "Content-Length: {6}\r\n" \
             "\r\n".format(
                 self.HTTP_VPN_TARGET,
-                '',
+                self.http_date(),
                 self.get_host_value(),
                 self.HTTP_KEEP_ALIVE,
                 self.HTTP_CONNECTION,
-                self.HTTP_CONTENT_TYPE2
+                self.HTTP_CONTENT_TYPE2,
+                len(body.storage)
             )
-        body = pack.to_buf()
         data = bytearray(header_text) + body.storage
         sock.sendall(data)
+
+    def send_raw(self, pack):
+        if not self.sock:
+            return
+        buf = pack.to_buf()
+        size_seq = Buf.int_to_bytes(len(buf.storage))
+        self.sock.send(size_seq)
+        self.sock.send(buf.storage)
+
+    def recv_raw(self):
+        if not self.sock:
+            return
+        seq = self.sock.recv(4)
+        size = Buf.bytes_to_int(seq)
+        data = self.sock.recv(size)
+        return data
