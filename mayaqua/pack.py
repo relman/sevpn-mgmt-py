@@ -46,6 +46,12 @@ class Pack:
             p.add_value(t[0], t[1])
         return p
 
+    def has_name(self, name):
+        return name in self._pack
+
+    def get_value(self, name, default=None):
+        return self._pack.get(name, default)
+
     def add_client_version(self, client_str, client_ver, client_build):
         self.add_value('client_str', client_str)
         self.add_value('client_ver', client_ver)
