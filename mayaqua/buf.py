@@ -37,9 +37,20 @@ class Buf:
             return cls.TYPE_UINT64
         return cls.TYPE_UNKNOWN
 
-    def write_int(self, value):
+    @staticmethod
+    def int_to_bytes(int_val):
         modifier = '>' if Buf.is_little() else '<'
-        seq = struct.pack('{0}I'.format(modifier), value)
+        seq = struct.pack('{0}I'.format(modifier), int_val)
+        return seq
+
+    @staticmethod
+    def bytes_to_int(seq):
+        modifier = '>' if Buf.is_little() else '<'
+        tup = struct.unpack('{0}I'.format(modifier), seq)
+        return tup[0]
+
+    def write_int(self, value):
+        seq = self.int_to_bytes(value)
         for i in seq:
             self.storage.append(i)
 
@@ -98,9 +109,7 @@ class Buf:
 
     def read_int(self):
         seq = self.read_bytes(4)
-        modifier = '>' if Buf.is_little() else '<'
-        value = struct.unpack('{0}I'.format(modifier), seq)
-        return value[0]
+        return self.bytes_to_int(seq)
 
     def read_data(self):
         len_ = self.read_int()
