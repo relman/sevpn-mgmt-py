@@ -19,13 +19,16 @@ class Session:
         self.host = host
         self.port = port
         self.sock = None
+        self.rpc_random = None
 
-    def new_rpc_session(self):
+    def start_rpc_session(self):
         sock = self.client_connect_to_server()
         self.client_upload_signature(sock)
-        data = self.client_download_hello(sock)
+        hello = self.client_download_hello(sock)  # add hello interpretation
+        assert hello
+        if hello.has_name('random'):
+            self.rpc_random = hello.get_value('random', bytearray())
         self.sock = sock
-        return data
 
     def client_connect_to_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
