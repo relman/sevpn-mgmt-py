@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+import mock
+
 from mayaqua import Buf
 
 
@@ -39,6 +41,18 @@ class TestBuf(unittest.TestCase):
         val = 9876543210L
         expected = Buf.TYPE_UINT64
         result = Buf.get_type(val)
+        self.assertEqual(result, expected)
+
+    def test_int_to_bytes(self):
+        value = 1
+        expected = '\x00\x00\x00\x01' if Buf.is_little() else '\x01\x00\x00\x00'
+        result = Buf.int_to_bytes(value)
+        self.assertEqual(result, expected)
+
+    def test_bytes_to_int(self):
+        value = bytearray('\x00\x00\x00\x02') if Buf.is_little() else '\x02\x00\x00\x00'
+        expected = 2
+        result = Buf.bytes_to_int(value)
         self.assertEqual(result, expected)
 
     def test_write_int(self):
@@ -88,6 +102,63 @@ class TestBuf(unittest.TestCase):
         buf = Buf()
         buf.write_int64(val)
         self.assertEqual(buf.storage, expected)
+
+    def test_write_value_none(self):
+        value = None
+        buf = Buf()
+        buf.get_type = mock.MagicMock()
+        buf.write_value(value)
+        buf.get_type.assert_not_called()
+
+    def test_write_value_int(self):
+        value = 123
+        val_type = Buf.TYPE_INT
+        buf = Buf()
+        Buf.get_type = mock.MagicMock(return_value=val_type)
+        buf.write_int = mock.MagicMock()
+        buf.write_value(value)
+        Buf.get_type.assert_called_with(value)
+        buf.write_int.assert_called_with(value)
+
+    def test_write_value_data(self):
+        value = bytearray('123')
+        val_type = Buf.TYPE_DATA
+        buf = Buf()
+        Buf.get_type = mock.MagicMock(return_value=val_type)
+        buf.write_data = mock.MagicMock()
+        buf.write_value(value)
+        Buf.get_type.assert_called_with(value)
+        buf.write_data.assert_called_with(value)
+
+    def test_write_value_str(self):
+        value = 'string'
+        val_type = Buf.TYPE_STR
+        buf = Buf()
+        Buf.get_type = mock.MagicMock(return_value=val_type)
+        buf.write_str = mock.MagicMock()
+        buf.write_value(value)
+        Buf.get_type.assert_called_with(value)
+        buf.write_str.assert_called_with(value)
+
+    def test_write_value_unicode(self):
+        value = u'string ®'
+        val_type = Buf.TYPE_UNISTR
+        buf = Buf()
+        Buf.get_type = mock.MagicMock(return_value=val_type)
+        buf.write_str_unicode = mock.MagicMock()
+        buf.write_value(value)
+        Buf.get_type.assert_called_with(value)
+        buf.write_str_unicode.assert_called_with(value)
+
+    def test_write_value_int64(self):
+        value = 9876543210L
+        val_type = Buf.TYPE_UINT64
+        buf = Buf()
+        Buf.get_type = mock.MagicMock(return_value=val_type)
+        buf.write_int64 = mock.MagicMock()
+        buf.write_value(value)
+        Buf.get_type.assert_called_with(value)
+        buf.write_int64.assert_called_with(value)
 
     def test_read_bytes(self):
         value = bytearray('1234 example')
@@ -167,6 +238,58 @@ class TestBuf(unittest.TestCase):
         buf.storage = value
         result = buf.read_int64()
         self.assertEqual(result, expected)
+
+    def test_read_value_none(self):
+        t = Buf.TYPE_UNKNOWN
+        expected = None
+        buf = Buf()
+        result = buf.read_value(t)
+        self.assertEqual(result, expected)
+
+    def test_read_value_int(self):
+        t = Buf.TYPE_INT
+        expected = 123
+        buf = Buf()
+        buf.read_int = mock.MagicMock(return_value=expected)
+        result = buf.read_value(t)
+        self.assertEqual(result, expected)
+        buf.read_int.assert_called_once()
+
+    def test_read_value_data(self):
+        t = Buf.TYPE_DATA
+        expected = bytearray('\x01\x02')
+        buf = Buf()
+        buf.read_data = mock.MagicMock(return_value=expected)
+        result = buf.read_value(t)
+        self.assertEqual(result, expected)
+        buf.read_data.assert_called_once()
+
+    def test_read_value_str(self):
+        t = Buf.TYPE_STR
+        expected = 'string'
+        buf = Buf()
+        buf.read_str = mock.MagicMock(return_value=expected)
+        result = buf.read_value(t)
+        self.assertEqual(result, expected)
+        buf.read_str.assert_called_once()
+
+    def test_read_value_unicode(self):
+        t = Buf.TYPE_UNISTR
+        expected = u'unicode©'
+        buf = Buf()
+        buf.read_str_unicode = mock.MagicMock(return_value=expected)
+        result = buf.read_value(t)
+        self.assertEqual(result, expected)
+        buf.read_str_unicode.assert_called_once()
+
+    def test_read_value_int64(self):
+        t = Buf.TYPE_UINT64
+        expected = 987654321L
+        buf = Buf()
+        buf.read_int64 = mock.MagicMock(return_value=expected)
+        result = buf.read_value(t)
+        self.assertEqual(result, expected)
+        buf.read_int64.assert_called_once()
 
 
 if __name__ == '__main__':
