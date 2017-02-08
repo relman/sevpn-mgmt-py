@@ -24,7 +24,7 @@ class Session:
     def start_rpc_session(self):
         sock = self.client_connect_to_server()
         self.client_upload_signature(sock)
-        hello = self.client_download_hello(sock)  # add hello interpretation
+        hello = self.client_download_hello(sock)
         assert hello
         if hello.has_name('random'):
             self.rpc_random = hello.get_value('random', bytearray())
@@ -37,7 +37,7 @@ class Session:
         ssl_sock.connect((self.host, self.port))
         return ssl_sock
 
-    def get_host_value(self):
+    def get_host_http_header(self):
         return "{0}:{1}".format(self.host, self.port)
 
     def client_upload_signature(self, sock):
@@ -49,7 +49,7 @@ class Session:
             "Content-Length: {4}\r\n" \
             "\r\n".format(
                 self.HTTP_VPN_TARGET2,
-                self.get_host_value(),
+                self.get_host_http_header(),
                 self.HTTP_CONTENT_TYPE3,
                 self.HTTP_CONNECTION,
                 len(Watermark.watermark)
@@ -91,7 +91,7 @@ class Session:
             "\r\n".format(
                 self.HTTP_VPN_TARGET,
                 self.http_date(),
-                self.get_host_value(),
+                self.get_host_http_header(),
                 self.HTTP_KEEP_ALIVE,
                 self.HTTP_CONNECTION,
                 self.HTTP_CONTENT_TYPE2,
