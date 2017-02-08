@@ -4,12 +4,12 @@ import struct
 
 
 class Buf:
-    TYPE_UNKNOWN = -1
     TYPE_INT = 0
     TYPE_DATA = 1
     TYPE_STR = 2
     TYPE_UNISTR = 3
     TYPE_UINT64 = 4
+    TYPE_UNKNOWN = 0x0fffffff
     allowed_types = [
         TYPE_INT, TYPE_DATA, TYPE_STR, TYPE_UNISTR, TYPE_UINT64
     ]
@@ -143,11 +143,11 @@ class Buf:
             return None
         if type_ == self.TYPE_INT:
             return self.read_int()
-        elif type_ == self.TYPE_UINT64:
-            return self.read_int64()
         elif type_ == self.TYPE_DATA:
             return self.read_data()
         elif type_ == self.TYPE_STR:
             return self.read_str()
         elif type_ == self.TYPE_UNISTR:
             return self.read_str_unicode()
+        elif type_ == self.TYPE_UINT64:
+            return self.read_int64()
