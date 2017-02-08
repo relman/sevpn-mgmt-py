@@ -30,8 +30,9 @@ class Pack:
         name_ = buf.read_name()
         type_ = buf.read_int()
         count = buf.read_int()
-        value = buf.read_value(type_)
-        return name_, value  # assuming there are always 1 value
+        for _ in range(0, count):
+            value = buf.read_value(type_)
+        return name_, value
 
     @staticmethod
     def read_pack(ba):
