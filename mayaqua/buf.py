@@ -151,3 +151,21 @@ class Buf:
             return self.read_str_unicode()
         elif type_ == self.TYPE_UINT64:
             return self.read_int64()
+
+    def write_element(self, tup):
+        if not tup:
+            return
+        name, value = tup
+        self.write_name(name)
+        self.write_int(self.get_type(value))
+        self.write_int(1)
+        self.write_value(value)
+
+    def read_element(self):
+        name_ = self.read_name()
+        type_ = self.read_int()
+        count = self.read_int()
+        value = None
+        for _ in range(0, count):
+            value = self.read_value(type_)
+        return name_, value

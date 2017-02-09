@@ -291,6 +291,30 @@ class TestBuf(unittest.TestCase):
         self.assertEqual(result, expected)
         buf.read_int64.assert_called_once()
 
+    def test_write_element(self):
+        buf = Buf()
+        tup = 'SomeName', 'SomeValue'
+        buf.write_name = mock.MagicMock()
+        buf.write_int = mock.MagicMock()
+        buf.write_value = mock.MagicMock()
+        buf.write_element(tup)
+        buf.write_name.assert_called_once_with(tup[0])
+        buf.write_int.assert_has_calls(calls=[mock.call(buf.get_type(tup[1])), mock.call(1)], any_order=True)
+        buf.write_value.assert_called_once_with(tup[1])
+
+    def test_read_element(self):
+        value_type = 123
+        name = 'name'
+        value = 'value'
+        buf = Buf()
+        buf.read_name = mock.MagicMock(return_value=name)
+        buf.read_int = mock.MagicMock(return_value=value_type)
+        buf.read_value = mock.MagicMock(return_value=value)
+        result = buf.read_element()
+        buf.read_name.assert_called_once()
+        buf.read_int.assert_called()
+        buf.read_value.assert_called_with(value_type)
+        self.assertEqual(result, (name, value))
 
 if __name__ == '__main__':
     unittest.main()

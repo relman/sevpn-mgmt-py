@@ -3,11 +3,23 @@ import mock
 import random
 import unittest
 
-from mayaqua import Buf
 from mayaqua import Pack
 
 
 class TestPack(unittest.TestCase):
+    def test_read_pack(self):
+        num = 2
+        mock_buf = mock.MagicMock()
+        mock_buf.read_int = mock.MagicMock(return_value=num)
+        mock_buf.read_element = mock.MagicMock()
+        mock_buf.read_element.side_effect = [(1, 2), (3, 4)]
+        p = Pack()
+        p.add_value = mock.MagicMock()
+        p.read_pack(mock_buf)
+        mock_buf.read_int.assert_called_once()
+        mock_buf.read_element.assert_called()
+        p.add_value.assert_has_calls(calls=[mock.call(1, 2), mock.call(3, 4)])
+
     def test_add_value_bool(self):
         name = 'BoolVal'
         value = True
@@ -70,28 +82,3 @@ class TestPack(unittest.TestCase):
         self.assertEqual(len(p._pack), 1)
         self.assertTrue(name in p._pack)
         self.assertTrue(len(p._pack[name]) < p.HTTP_PACK_RAND_SIZE_MAX)
-
-    def test_write_element(self):
-        buf = mock.MagicMock()
-        tup = 'SomeName', 'SomeValue'
-        buf.write_name = mock.MagicMock()
-        buf.write_int = mock.MagicMock()
-        buf.write_value = mock.MagicMock()
-        Pack.write_element(buf, tup)
-        buf.write_name.assert_called_once_with(tup[0])
-        buf.write_int.assert_has_calls(calls=[mock.call(Buf.get_type(tup[1])), mock.call(1)], any_order=True)
-        buf.write_value.assert_called_once_with(tup[1])
-
-    def test_read_element(self):
-        value_type = 123
-        name = 'name'
-        value = 'value'
-        buf = mock.MagicMock()
-        buf.read_name = mock.MagicMock(return_value=name)
-        buf.read_int = mock.MagicMock(return_value=value_type)
-        buf.read_value = mock.MagicMock(return_value=value)
-        result = Pack.read_element(buf)
-        buf.read_name.assert_called_once()
-        buf.read_int.assert_called()
-        buf.read_value.assert_called_with(value_type)
-        self.assertEqual(result, (name, value))

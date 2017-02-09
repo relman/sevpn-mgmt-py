@@ -13,39 +13,13 @@ class Pack:
     def __init__(self):
         self._pack = collections.OrderedDict()
 
-    @staticmethod
-    def write_element(buf, tup):
-        if not buf or not tup:
-            return
-        name, value = tup
-        buf.write_name(name)
-        buf.write_int(Buf.get_type(value))
-        buf.write_int(1)
-        buf.write_value(value)
-
-    @staticmethod
-    def read_element(buf):
-        if not buf:
-            return
-        name_ = buf.read_name()
-        type_ = buf.read_int()
-        count = buf.read_int()
-        for _ in range(0, count):
-            value = buf.read_value(type_)
-        return name_, value
-
-    @staticmethod
-    def read_pack(ba):
-        if ba is None:
+    def read_pack(self, buf):
+        if buf is None:
             return None
-        p = Pack()
-        buf = Buf()
-        buf.storage = ba
         num = buf.read_int()
         for _ in range(0, num):
-            t = p.read_element(buf)
-            p.add_value(t[0], t[1])
-        return p
+            t = buf.read_element()
+            self.add_value(t[0], t[1])
 
     def has_name(self, name):
         return name in self._pack
@@ -84,7 +58,7 @@ class Pack:
         buf = Buf()
         buf.write_int(len(self._pack))
         for i in self._pack.items():
-            self.write_element(buf, i)
+            buf.write_element(i)
         return buf
 
     def create_dummy_value(self):

@@ -2,7 +2,7 @@
 import hashlib
 
 from cedar import Session
-from mayaqua import Pack
+from mayaqua import Buf, Pack
 
 
 class Admin:
@@ -34,7 +34,10 @@ class Admin:
         pack.add_value("function_name", func_name)
         session.send_raw(pack)
         data = session.recv_raw()
-        result = Pack.read_pack(bytearray(data))
+        result = Pack()
+        buf = Buf()
+        buf.storage = bytearray(data)
+        result.read_pack(buf)
         if result.get_value('error', None):
             print result.get_value('error')
             return None

@@ -63,7 +63,10 @@ class Session:
         spl = data.split('\r\n\r\n')
         if len(spl) != 2:
             raise Exception('Bad HttpResponse')
-        pack = Pack.read_pack(bytearray(spl[1]))
+        pack = Pack()
+        buf = Buf()
+        buf.storage = bytearray(spl[1])
+        pack.read_pack(buf)
         return pack
 
     def http_date(self):
