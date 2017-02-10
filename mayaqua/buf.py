@@ -20,6 +20,9 @@ class Buf:
         self.storage = storage or bytearray()
         self.offset = 0
 
+    def __len__(self):
+        return len(self.storage)
+
     @staticmethod
     def is_little():
         return sys.byteorder == 'little'

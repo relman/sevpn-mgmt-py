@@ -7,6 +7,11 @@ from mayaqua import Buf
 
 
 class TestBuf(unittest.TestCase):
+    def test_len(self):
+        val = bytearray('1234\x00\xff')
+        buf = Buf(val)
+        self.assertEqual(len(buf), len(val))
+
     def test_get_type_bool(self):
         val = True
         expected = Buf.TYPE_INT
@@ -165,8 +170,8 @@ class TestBuf(unittest.TestCase):
         expected = bytearray('1234 ')
         expected_offset = len(expected)
         size = 5
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_bytes(size)
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -176,8 +181,8 @@ class TestBuf(unittest.TestCase):
             else bytearray('\x0c\x00\x00\x00test 123456')
         expected = 0x0c
         expected_offset = 4
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_int()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -187,8 +192,8 @@ class TestBuf(unittest.TestCase):
             else bytearray('\x08\x00\x00\x00new test12345678')
         expected = 'new test'
         expected_offset = 12
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_data()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -198,8 +203,8 @@ class TestBuf(unittest.TestCase):
             else bytearray('\x0b\x00\x00\x00new string\x00321654\x00test data 123456789')
         expected = 'new string'
         expected_offset = 14
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_name()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -209,8 +214,8 @@ class TestBuf(unittest.TestCase):
             else bytearray('\x0a\x00\x00\x00new string\x00321654\x00test data 123456789')
         expected = 'new string'
         expected_offset = 14
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_str()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -225,8 +230,8 @@ class TestBuf(unittest.TestCase):
         )
         expected = u'Testing «ταБЬℓσ»: 1<2 & 4+1>3'
         expected_offset = 42
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_str_unicode()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -234,8 +239,8 @@ class TestBuf(unittest.TestCase):
     def test_read_int64(self):
         value = '\x00\xab\x88\xcd\x99\xef\x11\xaa' if Buf.is_little() else '\xaa\x11\xef\x99\xcd\x88\xab\x00'
         expected = 0xab88cd99ef11aa
-        buf = Buf()
-        buf.storage = value
+        buf = Buf(value)
+        # buf.storage = value
         result = buf.read_int64()
         self.assertEqual(result, expected)
 
@@ -315,6 +320,7 @@ class TestBuf(unittest.TestCase):
         buf.read_int.assert_called()
         buf.read_value.assert_called_with(value_type)
         self.assertEqual(result, (name, value))
+
 
 if __name__ == '__main__':
     unittest.main()
