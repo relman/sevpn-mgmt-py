@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 import mock
+import unittest
 
 from mayaqua import Buf
 
@@ -171,7 +170,6 @@ class TestBuf(unittest.TestCase):
         expected_offset = len(expected)
         size = 5
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_bytes(size)
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -182,7 +180,6 @@ class TestBuf(unittest.TestCase):
         expected = 0x0c
         expected_offset = 4
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_int()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -193,7 +190,6 @@ class TestBuf(unittest.TestCase):
         expected = 'new test'
         expected_offset = 12
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_data()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -204,7 +200,6 @@ class TestBuf(unittest.TestCase):
         expected = 'new string'
         expected_offset = 14
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_name()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -215,7 +210,6 @@ class TestBuf(unittest.TestCase):
         expected = 'new string'
         expected_offset = 14
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_str()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -231,7 +225,6 @@ class TestBuf(unittest.TestCase):
         expected = u'Testing «ταБЬℓσ»: 1<2 & 4+1>3'
         expected_offset = 42
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_str_unicode()
         self.assertEqual(result, expected)
         self.assertEqual(buf.offset, expected_offset)
@@ -240,7 +233,6 @@ class TestBuf(unittest.TestCase):
         value = '\x00\xab\x88\xcd\x99\xef\x11\xaa' if Buf.is_little() else '\xaa\x11\xef\x99\xcd\x88\xab\x00'
         expected = 0xab88cd99ef11aa
         buf = Buf(value)
-        # buf.storage = value
         result = buf.read_int64()
         self.assertEqual(result, expected)
 
