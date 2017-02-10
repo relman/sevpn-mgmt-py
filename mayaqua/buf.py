@@ -14,8 +14,10 @@ class Buf:
         TYPE_INT, TYPE_DATA, TYPE_STR, TYPE_UNISTR, TYPE_UINT64
     ]
 
-    def __init__(self):
-        self.storage = bytearray()
+    def __init__(self, storage=None):
+        if storage and type(storage) is not bytearray:
+            storage = bytearray(storage)
+        self.storage = storage or bytearray()
         self.offset = 0
 
     @staticmethod
@@ -169,3 +171,8 @@ class Buf:
         for _ in range(0, count):
             value = self.read_value(type_)
         return name_, value
+
+
+class BufFactory:
+    def create(self, storage=None):
+        return Buf(storage)

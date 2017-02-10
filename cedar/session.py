@@ -4,6 +4,7 @@ import ssl
 
 from cedar import Watermark
 from mayaqua import Buf, Pack
+from mayaqua import BufFactory
 
 
 class Session:
@@ -15,9 +16,10 @@ class Session:
     HTTP_CONNECTION = "Keep-Alive"
     HTTP_KEEP_ALIVE = "timeout=15; max=19"
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, buf_factory=BufFactory()):
         self.host = host
         self.port = port
+        self.buf_factory = buf_factory
         self.sock = None
         self.rpc_random = None
 
@@ -64,8 +66,7 @@ class Session:
         if len(spl) != 2:
             raise Exception('Bad HttpResponse')
         pack = Pack()
-        buf = Buf()
-        buf.storage = bytearray(spl[1])
+        buf = self.buf_factory.create(spl[1])
         pack.read_pack(buf)
         return pack
 
@@ -82,7 +83,8 @@ class Session:
         if not pack:
             return
         pack.create_dummy_value()
-        body = pack.to_buf()
+        body = self.buf_factory.create()
+        pack.to_buf(body)
         header_text = \
             "POST {0} HTTP/1.1\r\n" \
             "Date: {1}\r\n" \
@@ -106,7 +108,9 @@ class Session:
     def send_raw(self, pack):
         if not self.sock:
             return
-        buf = pack.to_buf()
+
+        buf = self.buf_factory.create()
+        pack.to_buf(buf)
         size_seq = Buf.int_to_bytes(len(buf.storage))
         self.sock.send(size_seq)
         self.sock.send(buf.storage)
