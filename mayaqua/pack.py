@@ -3,8 +3,6 @@ import collections
 import platform
 import random
 
-from mayaqua import Buf
-
 
 class Pack:
     HTTP_PACK_RAND_SIZE_MAX = 1000
@@ -54,12 +52,10 @@ class Pack:
         else:
             raise Exception('Not supported value type')
 
-    def to_buf(self):
-        buf = Buf()
+    def to_buf(self, buf):
         buf.write_int(len(self._pack))
         for i in self._pack.items():
             buf.write_element(i)
-        return buf
 
     def create_dummy_value(self):
         size = random.randint(0, self.HTTP_PACK_RAND_SIZE_MAX)

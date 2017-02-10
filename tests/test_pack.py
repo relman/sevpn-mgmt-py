@@ -75,6 +75,17 @@ class TestPack(unittest.TestCase):
         with self.assertRaises(Exception):
             p.add_value(name, value)
 
+    def test_to_buf(self):
+        di = {'value1': 123, 'value2': 'abc'}
+        buf = mock.MagicMock()
+        buf.write_int = mock.MagicMock()
+        buf.write_element = mock.MagicMock()
+        pack = Pack()
+        pack._pack = di
+        pack.to_buf(buf)
+        buf.write_int.assert_called_once_with(len(di.items()))
+        buf.write_element.assert_has_calls(calls=[mock.call(di.items()[0]), mock.call(di.items()[1])], any_order=True)
+
     def test_create_dummy_value(self):
         name = 'pencore'
         p = Pack()
