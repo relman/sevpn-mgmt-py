@@ -83,8 +83,8 @@ class Session:
         if not pack:
             return
         pack.create_dummy_value()
-        body = self.buf_factory.create()
-        pack.to_buf(body)
+        body_buf = self.buf_factory.create()
+        pack.to_buf(body_buf)
         header_text = \
             "POST {0} HTTP/1.1\r\n" \
             "Date: {1}\r\n" \
@@ -100,9 +100,9 @@ class Session:
                 self.HTTP_KEEP_ALIVE,
                 self.HTTP_CONNECTION,
                 self.HTTP_CONTENT_TYPE2,
-                len(body.storage)
+                len(body_buf)
             )
-        data = bytearray(header_text) + body.storage
+        data = bytearray(header_text) + body_buf.storage
         sock.sendall(data)
 
     def send_raw(self, pack):
@@ -111,7 +111,7 @@ class Session:
 
         buf = self.buf_factory.create()
         pack.to_buf(buf)
-        size_seq = Buf.int_to_bytes(len(buf.storage))
+        size_seq = Buf.int_to_bytes(len(buf))
         self.sock.send(size_seq)
         self.sock.send(buf.storage)
 

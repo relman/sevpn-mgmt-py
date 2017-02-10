@@ -35,8 +35,7 @@ class Admin:
         session.send_raw(pack)
         data = session.recv_raw()
         result = Pack()
-        buf = Buf()
-        buf.storage = bytearray(data)
+        buf = Buf(data)
         result.read_pack(buf)
         if result.get_value('error', None):
             print result.get_value('error')
