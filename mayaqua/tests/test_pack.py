@@ -26,7 +26,7 @@ class TestPack(unittest.TestCase):
         p = Pack()
         p.add_value(name, value)
         self.assertEqual(len(p._pack), 1)
-        self.assertEqual(p._pack[name], value is True)
+        self.assertEqual(p._pack[name], value)
 
     def test_add_value_int(self):
         name = 'IntVal'
