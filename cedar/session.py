@@ -3,8 +3,7 @@ import socket
 import ssl
 
 from cedar import Watermark
-from mayaqua import Buf, Pack
-from mayaqua import BufFactory
+from mayaqua import Buf, BufFactory, Pack
 
 
 class Session:
@@ -24,15 +23,13 @@ class Session:
         self.rpc_random = None
 
     def start_rpc_session(self):
-        sock = self.client_connect_to_server()
+        sock = self.connect_to_server()
         self.client_upload_signature(sock)
-        hello = self.client_download_hello(sock)
-        assert hello
-        if hello.has_name('random'):
-            self.rpc_random = hello.get_value('random', bytearray())
+        hello = self.http_client_recv(sock)
+        self.rpc_random = hello.get_value('random', bytearray())
         self.sock = sock
 
-    def client_connect_to_server(self):
+    def connect_to_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_sock_timeout(sock, self.CONNECTING_TIMEOUT)
         ssl_sock = ssl.wrap_socket(sock, ssl_version=ssl.PROTOCOL_TLSv1)
@@ -64,7 +61,7 @@ class Session:
         data = bytearray(header_text) + body
         sock.sendall(data)
 
-    def client_download_hello(self, sock):
+    def http_client_recv(self, sock):
         data = sock.recv(16 * 1024)
         spl = data.split('\r\n\r\n')
         if len(spl) != 2:

@@ -19,7 +19,7 @@ class Admin:
         if hub_name:
             p.add_value("hubname", hub_name)
         session.http_client_send(p, session.sock)
-        answer = session.client_download_hello(session.sock)
+        answer = session.http_client_recv(session.sock)
         assert answer
         if answer.get_value('error', None):
             return None
