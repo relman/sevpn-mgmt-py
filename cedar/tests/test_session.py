@@ -31,9 +31,9 @@ class TestSession(unittest.TestCase):
             ssl_sock = mock.MagicMock()
             mock_wrap_sock.return_value = ssl_sock
             ssl_sock.connect = mock.MagicMock()
-            result = sess.connect_to_server()
+            sess.connect_to_server()
             mock_socket.assert_called_once_with(socket.AF_INET, socket.SOCK_STREAM)
             sess.set_sock_timeout.assert_called_with(mock_socket.return_value, sess.CONNECTING_TIMEOUT)
             mock_wrap_sock.assert_called_once_with(mock_socket.return_value, ssl_version=ssl.PROTOCOL_TLSv1)
             ssl_sock.connect.assert_called_once_with((sess.host, sess.port))
-            self.assertEqual(result, ssl_sock)
+            self.assertEqual(sess.sock, ssl_sock)
