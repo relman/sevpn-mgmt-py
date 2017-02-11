@@ -23,7 +23,7 @@ class Admin:
         assert answer
         if answer.get_value('error', None):
             return None
-        session.sock.settimeout(0x0fffffff)
+        session.set_sock_timeout(session.sock, 0x0fffffff)
         return session
 
     def rpc_call(self, session, func_name, pack=None):

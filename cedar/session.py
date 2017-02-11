@@ -34,10 +34,14 @@ class Session:
 
     def client_connect_to_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(self.CONNECTING_TIMEOUT)
+        self.set_sock_timeout(sock, self.CONNECTING_TIMEOUT)
         ssl_sock = ssl.wrap_socket(sock, ssl_version=ssl.PROTOCOL_TLSv1)
         ssl_sock.connect((self.host, self.port))
         return ssl_sock
+
+    def set_sock_timeout(self, sock, timeout):
+        if sock:
+            sock.settimeout(timeout)
 
     def get_host_http_header(self):
         return "{0}:{1}".format(self.host, self.port)
@@ -118,6 +122,7 @@ class Session:
     def recv_raw(self):
         if not self.sock:
             return
+
         seq = self.sock.recv(4)
         size = Buf.bytes_to_int(seq)
         data = self.sock.recv(size)
