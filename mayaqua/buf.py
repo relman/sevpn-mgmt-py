@@ -174,8 +174,3 @@ class Buf:
         for _ in range(0, count):
             value = self.read_value(type_)
         return name_, value
-
-
-class BufFactory:
-    def create(self, storage=None):
-        return Buf(storage)
