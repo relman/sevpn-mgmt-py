@@ -102,3 +102,42 @@ class TestSession(unittest.TestCase):
             m1.mktime.assert_called_once()
             m2.format_date_time.assert_called_once_with(m1.mktime.return_value)
             self.assertEqual(date, m2.format_date_time.return_value)
+
+    def test_http_send_pack(self):
+        storage = bytearray('\xff\xee\xdd')
+        pack = mock.MagicMock()
+        pack.create_dummy_value = mock.MagicMock()
+        pack.to_buf = mock.MagicMock()
+        sess = Session('host', 'port')
+        sess.sock = mock.MagicMock()
+        sess.sock.sendall = mock.MagicMock()
+        with mock.patch('cedar.session.Buf') as mock_buf:
+            mock_buf.return_value.storage = storage
+            sess.http_send_pack(pack)
+            pack.create_dummy_value.assert_called_once()
+            mock_buf.assert_called_once()
+            pack.to_buf.assert_called_once_with(mock_buf.return_value)
+            sess.sock.sendall.assert_called_once()
+
+    def test_send_raw(self):
+        pack = mock.MagicMock()
+        pack.to_buf = mock.MagicMock()
+        sess = Session('host', 'port')
+        sess.sock = mock.MagicMock()
+        sess.sock.send = mock.MagicMock()
+        with mock.patch('cedar.session.Buf') as mock_buf:
+            storage = bytearray('\xfa\xce\xde')
+            mock_buf.return_value.storage = storage
+            sess.send_raw(pack)
+            pack.to_buf.assert_called_with(mock_buf.return_value)
+            sess.sock.send.assert_has_calls(calls=[mock.call(mock_buf.int_to_bytes.return_value), mock.call(storage)],
+                                            any_order=True)
+
+    def test_recv_raw(self):
+        sess = Session('host', 'port')
+        sess.sock = mock.MagicMock()
+        with mock.patch('cedar.session.Buf') as mock_buf:
+            result = sess.recv_raw()
+            mock_buf.bytes_to_int.assert_called_once()
+            sess.sock.recv.assert_has_calls(calls=[mock.call(4), mock.call(mock_buf.bytes_to_int.return_value)])
+            self.assertEqual(result, sess.sock.recv.return_value)
