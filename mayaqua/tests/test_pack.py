@@ -20,6 +20,35 @@ class TestPack(unittest.TestCase):
         mock_buf.read_element.assert_called()
         p.add_value.assert_has_calls(calls=[mock.call(1, 2), mock.call(3, 4)])
 
+    def test_add_client_version(self):
+        client_str = 'Client Str'
+        client_ver = 'Client Ver'
+        client_build = 'Client Build'
+        p = Pack()
+        p.add_value = mock.MagicMock()
+        p.add_client_version(client_str, client_ver, client_build)
+        p.add_value.assert_has_calls(calls=[mock.call('client_str', client_str),
+                                            mock.call('client_ver', client_ver),
+                                            mock.call('client_build', client_build)],
+                                     any_order=True)
+
+    def test_get_platform(self):
+        p = Pack()
+        result = p.get_platform()
+        self.assertIsNotNone(result)
+        self.assertEqual(result.__name__, 'platform')
+
+    def test_add_win_ver(self):
+        p = Pack()
+        p.add_value = mock.MagicMock()
+        p.get_platform = mock.MagicMock()
+        p.get_platform.system = mock.MagicMock()
+        p.get_platform.platform = mock.MagicMock()
+        p.get_platform.release = mock.MagicMock(return_value='')
+        p.add_win_ver()
+        p.add_value.assert_called()
+        p.get_platform.assert_called_once()
+
     def test_add_value_bool(self):
         name = 'BoolVal'
         value = True
