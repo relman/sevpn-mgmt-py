@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import sys
 import struct
+import sys
 
 
 class Buf:
