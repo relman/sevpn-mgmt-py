@@ -23,9 +23,9 @@ class Session:
 
     def start_rpc_session(self):
         self.connect_to_server()
-        self.client_upload_signature()
-        hello = self.http_client_recv()
-        self.rpc_random = hello.get_value('random', bytearray())
+        self.upload_signature()
+        hello_pack = self.http_recv_pack()
+        self.rpc_random = hello_pack.get_value('random', bytearray())
 
     def connect_to_server(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,7 +41,7 @@ class Session:
     def get_host_http_header(self):
         return "{0}:{1}".format(self.host, self.port)
 
-    def client_upload_signature(self):
+    def upload_signature(self):
         header_text = \
             "POST {0} HTTP/1.1\r\n" \
             "Host: {1}\r\n" \
@@ -59,7 +59,7 @@ class Session:
         data = bytearray(header_text) + body
         self.sock.sendall(data)
 
-    def http_client_recv(self):
+    def http_recv_pack(self):
         data = self.sock.recv(16 * 1024)
         spl = data.split('\r\n\r\n')
         if len(spl) != 2:
@@ -78,7 +78,7 @@ class Session:
         stamp = mktime(now.timetuple())
         return format_date_time(stamp)
 
-    def http_client_send(self, pack, sock):
+    def http_send_pack(self, pack):
         if not pack:
             return
         pack.create_dummy_value()
@@ -102,7 +102,7 @@ class Session:
                 len(body_buf)
             )
         data = bytearray(header_text) + body_buf.storage
-        sock.sendall(data)
+        self.sock.sendall(data)
 
     def send_raw(self, pack):
         if not self.sock:
