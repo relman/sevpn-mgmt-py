@@ -301,15 +301,17 @@ class TestBuf(unittest.TestCase):
 
     def test_read_element(self):
         value_type = 123
+        count = 1
         name = 'name'
         value = 'value'
         buf = Buf()
         buf.read_name = mock.MagicMock(return_value=name)
-        buf.read_int = mock.MagicMock(return_value=value_type)
+        buf.read_int = mock.MagicMock()
+        buf.read_int.side_effect = [value_type, count]
         buf.read_value = mock.MagicMock(return_value=value)
         result = buf.read_element()
         buf.read_name.assert_called_once()
-        buf.read_int.assert_called()
+        self.assertEqual(buf.read_int.call_count, count + 1)
         buf.read_value.assert_called_with(value_type)
         self.assertEqual(result, (name, value))
 
