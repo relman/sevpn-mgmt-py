@@ -21,7 +21,25 @@ class TestPack(unittest.TestCase):
         p.add_value.assert_has_calls(calls=[mock.call(1, 2), mock.call(3, 4)])
 
     def test_get_value(self):
-        self.assertTrue(False)
+        name = 'test'
+        value = 'value'
+        p = Pack()
+        p.add_value(name, value)
+        result = p.get_value(name)
+        self.assertEqual(result, value)
+
+    def test_get_value_none(self):
+        p = Pack()
+        result = p.get_value('test')
+        self.assertIsNone(result)
+
+    def test_get_value_multiple(self):
+        name = 'list'
+        value = [1, 2, 3]
+        p = Pack()
+        p.add_value(name, value)
+        result = p.get_value(name)
+        self.assertEqual(result, value)
 
     def test_add_client_version(self):
         client_str = 'Client Str'
@@ -51,9 +69,6 @@ class TestPack(unittest.TestCase):
         p.add_win_ver()
         p.add_value.assert_called()
         p.get_platform.assert_called_once()
-
-    def test_add_value_list(self):
-        self.assertTrue(False)
 
     def test_add_value_bool(self):
         name = 'BoolVal'
@@ -98,6 +113,14 @@ class TestPack(unittest.TestCase):
     def test_add_value_long(self):
         name = 'LongVal'
         value = 9876543210L
+        p = Pack()
+        p.add_value(name, value)
+        self.assertEqual(len(p._pack), 1)
+        self.assertEqual(p._pack[name], value)
+
+    def test_add_value_list(self):
+        name = 'ListVal'
+        value = [1, 2, 3]
         p = Pack()
         p.add_value(name, value)
         self.assertEqual(len(p._pack), 1)

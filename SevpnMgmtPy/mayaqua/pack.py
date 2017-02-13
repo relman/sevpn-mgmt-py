@@ -6,7 +6,7 @@ import random
 
 class Pack:
     HTTP_PACK_RAND_SIZE_MAX = 1000
-    ALLOWED_TYPES = [bool, int, str, bytearray, unicode, long]
+    ALLOWED_TYPES = [bool, int, str, bytearray, unicode, long, list]
 
     def __init__(self):
         self._pack = collections.OrderedDict()
@@ -52,9 +52,7 @@ class Pack:
 
     def add_value(self, name, value):
         t = type(value)
-        if t is list:
-            self._pack[name] = value
-        elif t is bool:
+        if t is bool:
             self._pack[name] = 1 if value else 0
         elif t in self.ALLOWED_TYPES:
             self._pack[name] = value
