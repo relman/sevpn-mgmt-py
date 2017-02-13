@@ -167,10 +167,8 @@ class Buf:
         self.write_value(value)
 
     def read_element(self):
-        name_ = self.read_name()
+        name = self.read_name()
         type_ = self.read_int()
         count = self.read_int()
-        value = None
-        for _ in range(0, count):
-            value = self.read_value(type_)
-        return name_, value
+        values = [self.read_value(type_) for _ in range(0, count)]
+        return name, values

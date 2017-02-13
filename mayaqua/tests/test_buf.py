@@ -311,8 +311,26 @@ class TestBuf(unittest.TestCase):
         buf.read_value = mock.MagicMock(return_value=value)
         result = buf.read_element()
         buf.read_name.assert_called_once()
-        self.assertEqual(buf.read_int.call_count, count + 1)
+        self.assertEqual(buf.read_int.call_count, 2)
+        buf.read_value.assert_called_once_with(value_type)
+        self.assertEqual(result, (name, [value]))
+
+    def test_read_element_multiple(self):
+        value_type = 456
+        count = 3
+        name = 'name'
+        value = ['first', 'second', 'third']
+        buf = Buf()
+        buf.read_name = mock.MagicMock(return_value=name)
+        buf.read_int = mock.MagicMock()
+        buf.read_int.side_effect = [value_type, count]
+        buf.read_value = mock.MagicMock()
+        buf.read_value.side_effect = value
+        result = buf.read_element()
+        buf.read_name.assert_called_once()
+        self.assertEqual(buf.read_int.call_count, 2)
         buf.read_value.assert_called_with(value_type)
+        self.assertEqual(buf.read_value.call_count, count)
         self.assertEqual(result, (name, value))
 
 

@@ -122,3 +122,7 @@ class TestPack(unittest.TestCase):
         self.assertEqual(len(p._pack), 1)
         self.assertTrue(name in p._pack)
         self.assertTrue(len(p._pack[name]) < p.HTTP_PACK_RAND_SIZE_MAX)
+
+
+if __name__ == '__main__':
+    unittest.main()
