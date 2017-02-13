@@ -3,7 +3,7 @@ import mock
 import random
 import unittest
 
-from mayaqua import Pack
+from SevpnMgmtPy.mayaqua import Pack
 
 
 class TestPack(unittest.TestCase):
@@ -19,6 +19,9 @@ class TestPack(unittest.TestCase):
         mock_buf.read_int.assert_called_once()
         mock_buf.read_element.assert_called()
         p.add_value.assert_has_calls(calls=[mock.call(1, 2), mock.call(3, 4)])
+
+    def test_get_value(self):
+        self.assertTrue(False)
 
     def test_add_client_version(self):
         client_str = 'Client Str'
@@ -48,6 +51,9 @@ class TestPack(unittest.TestCase):
         p.add_win_ver()
         p.add_value.assert_called()
         p.get_platform.assert_called_once()
+
+    def test_add_value_list(self):
+        self.assertTrue(False)
 
     def test_add_value_bool(self):
         name = 'BoolVal'

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import hashlib
 
-from cedar import Session
-from mayaqua import Buf, Pack
+from session import Session
+from SevpnMgmtPy.mayaqua import Buf, Pack
 
 
 class Admin:

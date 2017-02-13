@@ -2,8 +2,8 @@
 import socket
 import ssl
 
-from cedar import Watermark
-from mayaqua import Buf, Pack
+from watermark import Watermark
+from SevpnMgmtPy.mayaqua import Buf, Pack
 
 
 class Session:

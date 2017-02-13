@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from mayaqua import Buf
+from SevpnMgmtPy.mayaqua import Buf
 
 
 class TestBuf(unittest.TestCase):

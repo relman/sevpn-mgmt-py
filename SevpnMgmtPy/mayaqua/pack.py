@@ -23,7 +23,10 @@ class Pack:
         return name in self._pack
 
     def get_value(self, name, default=None):
-        return self._pack.get(name, default)
+        result = self._pack.get(name, default)
+        if result is not None and len(result) == 1:
+            return result[0]
+        return result
 
     def add_client_version(self, client_str, client_ver, client_build):
         self.add_value('client_str', client_str)
@@ -49,7 +52,9 @@ class Pack:
 
     def add_value(self, name, value):
         t = type(value)
-        if t is bool:
+        if t is list:
+            self._pack[name] = value
+        elif t is bool:
             self._pack[name] = 1 if value else 0
         elif t in self.ALLOWED_TYPES:
             self._pack[name] = value

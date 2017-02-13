@@ -4,7 +4,7 @@ import socket
 import ssl
 import unittest
 
-from cedar import Session, Watermark
+from SevpnMgmtPy.cedar import Session, Watermark
 
 
 class TestSession(unittest.TestCase):
@@ -85,7 +85,8 @@ class TestSession(unittest.TestCase):
         sock.recv = mock.MagicMock(return_value=data)
         sess = Session('host', 'port')
         sess.sock = sock
-        with mock.patch('cedar.session.Pack') as mock_pack, mock.patch('cedar.session.Buf') as mock_buf:
+        with mock.patch('SevpnMgmtPy.cedar.session.Pack') as mock_pack, \
+                mock.patch('SevpnMgmtPy.cedar.session.Buf') as mock_buf:
             mock_pack.return_value.read_pack = mock.MagicMock()
             pack = sess.http_recv_pack()
             mock_pack.assert_called_once()
@@ -111,7 +112,7 @@ class TestSession(unittest.TestCase):
         sess = Session('host', 'port')
         sess.sock = mock.MagicMock()
         sess.sock.sendall = mock.MagicMock()
-        with mock.patch('cedar.session.Buf') as mock_buf:
+        with mock.patch('SevpnMgmtPy.cedar.session.Buf') as mock_buf:
             mock_buf.return_value.storage = storage
             sess.http_send_pack(pack)
             pack.create_dummy_value.assert_called_once()
@@ -125,7 +126,7 @@ class TestSession(unittest.TestCase):
         sess = Session('host', 'port')
         sess.sock = mock.MagicMock()
         sess.sock.send = mock.MagicMock()
-        with mock.patch('cedar.session.Buf') as mock_buf:
+        with mock.patch('SevpnMgmtPy.cedar.session.Buf') as mock_buf:
             storage = bytearray('\xfa\xce\xde')
             mock_buf.return_value.storage = storage
             sess.send_raw(pack)
@@ -136,7 +137,7 @@ class TestSession(unittest.TestCase):
     def test_recv_raw(self):
         sess = Session('host', 'port')
         sess.sock = mock.MagicMock()
-        with mock.patch('cedar.session.Buf') as mock_buf:
+        with mock.patch('SevpnMgmtPy.cedar.session.Buf') as mock_buf:
             result = sess.recv_raw()
             mock_buf.bytes_to_int.assert_called_once()
             sess.sock.recv.assert_has_calls(calls=[mock.call(4), mock.call(mock_buf.bytes_to_int.return_value)])
