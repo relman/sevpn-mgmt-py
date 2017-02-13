@@ -68,3 +68,7 @@ class Pack:
         size = random.randint(0, self.HTTP_PACK_RAND_SIZE_MAX)
         rnd = random._urandom(size)
         self.add_value('pencore', rnd)
+
+    def get_index_count(self, name):
+        item = self._pack.get(name, [])
+        return len(item)

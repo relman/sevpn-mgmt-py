@@ -152,6 +152,19 @@ class TestPack(unittest.TestCase):
         self.assertTrue(name in p._pack)
         self.assertTrue(len(p._pack[name]) < p.HTTP_PACK_RAND_SIZE_MAX)
 
+    def test_get_index_count_none(self):
+        p = Pack()
+        result = p.get_index_count('test')
+        self.assertEqual(result, 0)
+
+    def test_get_index_count(self):
+        name = 'test'
+        value = [1, 2, 3]
+        p = Pack()
+        p.add_value(name, value)
+        result = p.get_index_count(name)
+        self.assertEqual(result, len(value))
+
 
 if __name__ == '__main__':
     unittest.main()
