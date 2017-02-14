@@ -22,10 +22,10 @@ class Pack:
     def has_name(self, name):
         return name in self._pack
 
-    def get_value(self, name, default=None):
+    def get_value(self, name, default=None, index=0):
         result = self._pack.get(name, default)
-        if result is not None and len(result) == 1:
-            return result[0]
+        if result is not None and (len(result) == 1 or index):
+            return result[index]
         return result
 
     def add_client_version(self, client_str, client_ver, client_build):

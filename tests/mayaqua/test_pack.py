@@ -41,6 +41,25 @@ class TestPack(unittest.TestCase):
         result = p.get_value(name)
         self.assertEqual(result, value)
 
+    def test_get_value_by_index(self):
+        name = 'num_array'
+        value = [10, 20, 30]
+        index = 2
+        p = Pack()
+        p.add_value(name, value)
+        result = p.get_value(name, index=index)
+        self.assertEqual(result, value[index])
+
+    def test_get_value_index_out_of_range(self):
+        name = 'num_array'
+        value = [10, 20, 30]
+        index = 5
+        p = Pack()
+        p.add_value(name, value)
+        with self.assertRaises(IndexError):
+            result = p.get_value(name, index=index)
+            self.assertIsNone(result)
+
     def test_add_client_version(self):
         client_str = 'Client Str'
         client_ver = 'Client Ver'
