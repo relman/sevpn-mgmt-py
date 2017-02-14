@@ -31,7 +31,7 @@ class Admin:
         self.session.http_send_pack(p)
 
     def rpc_call(self, func_name, pack=None):
-        if not self.session:
+        if not self.session or not func_name:
             return None
         if not pack:
             pack = Pack()

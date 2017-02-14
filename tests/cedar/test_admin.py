@@ -80,6 +80,12 @@ class TestAdmin(unittest.TestCase):
         result = admin.rpc_call('func')
         self.assertIsNone(result)
 
+    def test_rpc_call_no_func_name(self):
+        admin = Admin()
+        admin.session = mock.MagicMock()
+        result = admin.rpc_call('')
+        self.assertIsNone(result)
+
     def test_rpc_call_no_pack(self):
         func_name = 'function'
         admin = Admin()
