@@ -4,6 +4,8 @@ from SevpnMgmtPy.mayaqua import Pack
 
 
 def sc_crash(admin):
+    if admin is None:
+        return
     pack = Pack()
     rpc_test = RpcTest()
     rpc_test.out_rpc_test(pack)

@@ -7,12 +7,16 @@ class RpcTest:
         self.unistr_val = unistr_val
 
     def in_rpc_test(self, pack):
+        if pack is None:
+            return
         self.int_val = pack.get_value("IntValue")
         self.int64_val = pack.get_value("Int64Value")
         self.str_val = pack.get_value("StrValue")
         self.unistr_val = pack.get_value("UniStrValue")
 
     def out_rpc_test(self, pack):
+        if pack is None:
+            return
         pack.add_value("IntValue", self.int_val)
         pack.add_value("Int64Value", self.int64_val)
         pack.add_value("StrValue", self.str_val)
