@@ -50,6 +50,15 @@ class TestPack(unittest.TestCase):
         result = p.get_value(name, index=index)
         self.assertEqual(result, value[index])
 
+    def test_get_value_by_index_case0(self):
+        name = 'num_array'
+        value = [10, 20, 30, 40]
+        index = 0
+        p = Pack()
+        p.add_value(name, value)
+        result = p.get_value(name, index=index)
+        self.assertEqual(result, value[index])
+
     def test_get_value_index_out_of_range(self):
         name = 'num_array'
         value = [10, 20, 30]
