@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
+
+
 class RpcFarm:
-    def __init__(self, server_type=0, num_port=0, ports=list(), public_ip=0, controller_name='', controller_port=0,
-                 member_password='', weight=0, controller_only=False):
+    SERVER_TYPE_STANDALONE = 0
+    SERVER_TYPE_FARM_CONTROLLER = 1
+    SERVER_TYPE_FARM_MEMBER = 2
+
+    def __init__(self, server_type=SERVER_TYPE_STANDALONE, num_port=0, ports=list(), public_ip=0, controller_name='',
+                 controller_port=0, member_password='', weight=0, controller_only=False):
         self.server_type = server_type
         self.num_port = num_port
         self.ports = ports
@@ -23,3 +29,13 @@ class RpcFarm:
         self.member_password = pack.get_value("MemberPassword")
         self.weight = pack.get_value("Weight")
         self.controller_only = pack.get_value("ControllerOnly")
+
+    def out_rpc_farm(self, pack):
+        pack.add_value("ServerType", self.server_type)
+        pack.add_value("Ports", self.ports)
+        pack.add_value("PublicIp", self.public_ip)
+        pack.add_value("ControllerName", self.controller_name)
+        pack.add_value("ControllerPort", self.controller_port)
+        pack.add_value("MemberPassword", self.member_password)
+        pack.add_value("Weight", self.weight)
+        pack.add_value("ControllerOnly", self.controller_only)
